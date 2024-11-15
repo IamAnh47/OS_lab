@@ -6,10 +6,10 @@
 #include <sys/mman.h>
 #include <sys/wait.h>
 
-#define SHARED_MEM_NAME "/" // Ten bo nho chia se
-#define MAX_MOVIES 2000 
-#define FILE1 "ratings_part1.txt" 
-#define FILE2 "ratings_part2.txt" 
+#define SHARED_MEM_NAME "/problem1"
+#define MAX_MOVIES 2000
+#define FILE1 "movie-100k_1.txt"
+#define FILE2 "movie-100k_2.txt"
 
 
 typedef struct {
