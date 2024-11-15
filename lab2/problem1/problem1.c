@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,6 +6,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
+
 
 #define SHARED_MEM_NAME "/problem1"
 #define MAX_MOVIES 2000
