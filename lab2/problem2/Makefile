@@ -1,10 +1,14 @@
-all: sum_serial sum_multi_thread
+CC = gcc
+CFLAGS = -pthread -O2
+TARGETS = sum_serial sum_multi_thread
+
+all: $(TARGETS)
 
 sum_serial: sum_serial.c
-    gcc -o sum_serial sum_serial.c
+	$(CC) $(CFLAGS) -o $@ $^
 
 sum_multi_thread: sum_multi_thread.c
-    gcc -pthread -o sum_multi_thread sum_multi_thread.c
+	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
-    rm -f sum_serial sum_multi_thread
+	rm -f $(TARGETS)
