@@ -6,7 +6,7 @@
 #include <sys/mman.h>
 #include <sys/wait.h>
 
-#define SHARED_MEM_NAME "/movie_ratings"
+#define SHARED_MEM_NAME "/problem1"
 #define MAX_MOVIES 2000
 #define FILE1 "movie-100k_1.txt"
 #define FILE2 "movie-100k_2.txt"
