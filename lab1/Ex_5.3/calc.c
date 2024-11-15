@@ -8,7 +8,7 @@ int main() {
     char op;
     double result;
 
-    printf("Enter calculation (e.g., 5 + 3): ");
+    printf("Enter calculation: ");
     while (scanf("%lf %c %lf", &a, &op, &b) == 3) {
         switch (op) {
             case '+':
@@ -28,10 +28,16 @@ int main() {
                 break;
             default:
                 printf("SYNTAX ERROR\n");
+                printf("Enter calculation: ");
                 continue;
         }
-        printf("Result: %.2lf\n", result);
-        printf("Enter calculation (e.g., 5 + 3) or Ctrl+C to exit: ");
+
+        if (result == (int)result) {
+            printf("Result: %.0lf\n", result);
+        } else {
+            printf("Result: %.2lf\n", result);
+        }
+        printf("Enter calculation: ");
     }
     return 0;
 }

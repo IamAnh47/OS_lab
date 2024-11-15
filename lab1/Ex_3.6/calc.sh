@@ -29,7 +29,9 @@ calculate() {
                 echo "MATH ERROR"
                 return 1
             else
-                ANS=$(echo "scale=2; ($op1 / $op2) + 0.005" | bc)
+                # ANS=$(echo "scale=2; ($op1 / $op2) " | bc)
+                ANS=$(echo "scale=3; ($op1 / $op2) + 0.005" | bc)
+                ANS=$(echo "scale=2; $ANS / 1" | bc)
             fi
             ;;
         %) 
@@ -37,7 +39,13 @@ calculate() {
                 echo "MATH ERROR"
                 return 1
             else
-                ANS=$(echo "scale=2; $op1 / $op2" | bc)
+                # ANS=$(echo "scale=2; ($op1 % $op1)")
+                    if [[ "$op1" =~ ^-?[0-9]+$ ]] && [[ "$op2" =~ ^-?[0-9]+$ ]]; then
+                    ANS=$((op1 % op2))
+                else
+                    echo "SYNTAX ERROR"
+                    return 1
+                fi
             fi
             ;;
         *) 
