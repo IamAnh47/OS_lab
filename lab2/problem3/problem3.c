@@ -11,13 +11,16 @@
 #define MAX_MSG_SIZE 256
 #define MAX_MESSAGES 10
 
-// Hàm gửi tin nhắn từ Thread A đến Thread B
 void *thread_a_func(void *arg) {
-    mqd_t mq_send = mq_open(QUEUE_A_TO_B, O_WRONLY);
-    mqd_t mq_receive = mq_open(QUEUE_B_TO_A, O_RDONLY);
+    mqd_t mq_send_handle = mq_open(QUEUE_A_TO_B, O_WRONLY);
+    if (mq_send_handle == -1) {
+        perror("Thread A: mq_open for sending failed");
+        pthread_exit(NULL);
+    }
 
-    if (mq_send == -1 || mq_receive == -1) {
-        perror("Thread A: mq_open failed");
+    mqd_t mq_receive_handle = mq_open(QUEUE_B_TO_A, O_RDONLY);
+    if (mq_receive_handle == -1) {
+        perror("Thread A: mq_open for receiving failed");
         pthread_exit(NULL);
     }
 
@@ -26,26 +29,34 @@ void *thread_a_func(void *arg) {
 
     for (int i = 0; i < 5; i++) {
         snprintf(send_buffer, MAX_MSG_SIZE, "Message %d from A", i + 1);
-        mq_send(mq_send, send_buffer, strlen(send_buffer) + 1, 0);
+        if (mq_send(mq_send_handle, send_buffer, strlen(send_buffer) + 1, 0) == -1) {
+            perror("Thread A: mq_send failed");
+        } else {
+            printf("Thread A: Sent message: %s\n", send_buffer);
+        }
 
-        printf("Thread A sent: %s\n", send_buffer);
-
-        mq_receive(mq_receive, recv_buffer, MAX_MSG_SIZE, NULL);
-        printf("Thread A received: %s\n", recv_buffer);
+        if (mq_receive(mq_receive_handle, recv_buffer, MAX_MSG_SIZE, NULL) == -1) {
+            perror("Thread A: mq_receive failed");
+        } else {
+            printf("Thread A: Received message: %s\n", recv_buffer);
+        }
     }
 
-    mq_close(mq_send);
-    mq_close(mq_receive);
+    mq_close(mq_send_handle);
+    mq_close(mq_receive_handle);
     pthread_exit(NULL);
 }
 
-// Hàm gửi tin nhắn từ Thread B đến Thread A
 void *thread_b_func(void *arg) {
-    mqd_t mq_receive = mq_open(QUEUE_A_TO_B, O_RDONLY);
-    mqd_t mq_send = mq_open(QUEUE_B_TO_A, O_WRONLY);
+    mqd_t mq_receive_handle = mq_open(QUEUE_A_TO_B, O_RDONLY);
+    if (mq_receive_handle == -1) {
+        perror("Thread B: mq_open for receiving failed");
+        pthread_exit(NULL);
+    }
 
-    if (mq_send == -1 || mq_receive == -1) {
-        perror("Thread B: mq_open failed");
+    mqd_t mq_send_handle = mq_open(QUEUE_B_TO_A, O_WRONLY);
+    if (mq_send_handle == -1) {
+        perror("Thread B: mq_open for sending failed");
         pthread_exit(NULL);
     }
 
@@ -53,19 +64,25 @@ void *thread_b_func(void *arg) {
     char recv_buffer[MAX_MSG_SIZE];
 
     for (int i = 0; i < 5; i++) {
-        mq_receive(mq_receive, recv_buffer, MAX_MSG_SIZE, NULL);
-        printf("Thread B received: %s\n", recv_buffer);
+        if (mq_receive(mq_receive_handle, recv_buffer, MAX_MSG_SIZE, NULL) == -1) {
+            perror("Thread B: mq_receive failed");
+        } else {
+            printf("Thread B: Received message: %s\n", recv_buffer);
+        }
 
-        snprintf(send_buffer, MAX_MSG_SIZE, "Reply %d from B", i + 1);
-        mq_send(mq_send, send_buffer, strlen(send_buffer) + 1, 0);
-
-        printf("Thread B sent: %s\n", send_buffer);
+        snprintf(send_buffer, MAX_MSG_SIZE, "Message %d from B", i + 1);
+        if (mq_send(mq_send_handle, send_buffer, strlen(send_buffer) + 1, 0) == -1) {
+            perror("Thread B: mq_send failed");
+        } else {
+            printf("Thread B: Sent message: %s\n", send_buffer);
+        }
     }
 
-    mq_close(mq_receive);
-    mq_close(mq_send);
+    mq_close(mq_send_handle);
+    mq_close(mq_receive_handle);
     pthread_exit(NULL);
 }
+
 
 int main() {
     // Thiết lập thuộc tính hàng đợi
